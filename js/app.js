@@ -52,6 +52,10 @@
     return maxSize - ((rank - 1) * (maxSize - minSize)) / 49;
   }
 
+  function getURL(lat, lon) {
+    return `https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${lat},${lon}`;
+  }
+
   // function to render the data
   function renderData(data, color, layerGroup) {
     data.forEach((row) => {
@@ -71,7 +75,13 @@
           pane: "middle",
         }).addTo(layerGroup);
 
-        popup = `<strong>Rank</strong>: ${rank}`;
+        // Generate the Street View URL
+        const streetViewUrl = getURL(lat, lon);
+
+        const popup = `
+          <strong>Rank</strong>: ${rank}<br>
+          <a href="${streetViewUrl}" target="_blank">Street View</a>
+        `;
 
         // Add popup with rank
         marker.bindPopup(popup);
