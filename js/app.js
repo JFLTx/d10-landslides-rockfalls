@@ -47,21 +47,39 @@
   }
 
   function calcSize(rank) {
-    const maxSize = 20;
-    const minSize = 5;
-    return maxSize - ((rank - 1) * (maxSize - minSize)) / 49;
+    const maxSize = 28;
+    const minSize = 4;
+    return maxSize - ((rank - 1) * (maxSize - minSize)) / 75;
   }
 
+  // const url = `https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=$`;
+
+  // Function to construct a Street View URL
   function getURL(lat, lon) {
-    return `https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${lat},${lon}`;
+    return lat === "N/A" || lon === "N/A"
+      ? "N/A"
+      : `https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${lat},${lon}`;
   }
 
   // function to render the data
   function renderData(data, color, layerGroup) {
-    data.forEach((row) => {
-      const lat = parseFloat(row.Latitude);
-      const lon = parseFloat(row.Longitude);
+    data.forEach((row, index) => {
+      const lat = parseFloat(row.DOTLatitude);
+      const lon = parseFloat(row.DOTLongitude);
+      const rfLat =
+        row.RFLatitude === "N/A" ? "N/A" : parseFloat(row.RFLatitude);
+      const rfLon =
+        row.RFLongitude === "N/A" ? "N/A" : parseFloat(row.RFLongitude);
+      const lsLat =
+        row.LSLatitude === "N/A" ? "N/A" : parseFloat(row.LSLatitude);
+      const lsLon =
+        row.LSLongitude === "N/A" ? "N/A" : parseFloat(row.LSLongitude);
       const rank = parseInt(row.Rank);
+      const route = row.RT_Label;
+      const siteCo = row.County;
+      const fc = row.FunctionalClassification;
+      const rfMP = row.RFMP;
+      const lsMP = row.LSMP;
 
       if (!isNaN(lat) && !isNaN(lon) && !isNaN(rank)) {
         const size = calcSize(rank);
@@ -75,12 +93,45 @@
           pane: "middle",
         }).addTo(layerGroup);
 
+        // **Only label ranks between 1 and 10**
+        if (rank >= 1 && rank <= 10) {
+            // Create a custom divIcon for the rank label
+            const rankLabel = L.divIcon({
+                className: 'rank-label',
+                html: `<span>${rank}</span>`,
+                iconSize: [0, 0],
+                iconAnchor: [5, 10] 
+            });
+
+
+          // Add label to the map
+          L.marker([lat, lon], { icon: rankLabel, pane: "top" }).addTo(
+            layerGroup
+          );
+        }
+
+        // Generate the Street View URLs
+        const rockfallURL = getURL(rfLat, rfLon);
+        const landslideURL = getURL(lsLat, lsLon);
+
         // Generate the Street View URL
-        const streetViewUrl = getURL(lat, lon);
+        // const streetViewUrl = getURL(lat, lon);
 
         const popup = `
           <strong>Rank</strong>: ${rank}<br>
-          <a href="${streetViewUrl}" target="_blank">Street View</a>
+          <strong>County</strong>: ${siteCo}<br>
+          <strong>Route</strong>: ${route}<br>
+          <strong>Functional Classification</strong>: ${fc}<br>
+          <strong>Rockfall MP</strong>: ${
+            rockfallURL === "N/A"
+              ? "N/A"
+              : `<a href="${rockfallURL}" target="_blank">${rfMP}</a>`
+          }<br>
+          <strong>Landslide MP</strong>: ${
+            landslideURL === "N/A"
+              ? "N/A"
+              : `<a href="${landslideURL}" target="_blank">${lsMP}</a>`
+          }
         `;
 
         // Add popup with rank
@@ -109,13 +160,23 @@
   function createLegend() {
     const legend = L.control({ position: "bottomright" });
 
+    // legend.onAdd = function () {
+    //   const div = L.DomUtil.create("div", "legend");
+    //   div.innerHTML = `
+    //   <h4>Legend</h4>
+    //   <div><span class="legend-symbol rockfalls"></span>Rockfalls</div>
+    //   <div><span class="legend-symbol landslides"></span>Landslides</div>
+    // `;
+    //   return div;
+    // };
+
     legend.onAdd = function () {
       const div = L.DomUtil.create("div", "legend");
       div.innerHTML = `
       <h4>Legend</h4>
-      <div><span class="legend-symbol rockfalls"></span>Rockfalls</div>
-      <div><span class="legend-symbol landslides"></span>Landslides</div>
-    `;
+      <div><span class="legend-symbol sites"></span>Top 76 Sites</div>
+      <div><span class="legend-symbol-square county"></span>District 10 Counties</div>
+      <div><span class="legend-symbol-square d10"></span>KYTC District 10</div>`;
       return div;
     };
 
@@ -128,8 +189,9 @@
 
     try {
       // Load the data
-      const rockfalls = await d3.csv("data/Top 50 Rockfalls.csv");
-      const landslides = await d3.csv("data/Top 50 Landslides.csv");
+      // const rockfalls = await d3.csv("data/Top 50 Rockfalls.csv");
+      // const landslides = await d3.csv("data/Top 50 Landslides.csv");
+      const sites = await d3.csv("data/Top 76 Sites Data.csv");
       const d10 = await d3.json("data/d10-polygon.geojson");
       const counties = await d3.json("data/d10-counties-polygon.geojson");
 
@@ -159,12 +221,14 @@
       });
 
       // Create layer groups for rockfalls and landslides
-      const rockfallLayer = L.layerGroup().addTo(map);
-      const landslideLayer = L.layerGroup().addTo(map);
+      // const rockfallLayer = L.layerGroup().addTo(map);
+      // const landslideLayer = L.layerGroup().addTo(map);
+      const sitesLayer = L.layerGroup().addTo(map);
 
       // Render the data points
-      renderData(rockfalls, "#FF0000", rockfallLayer); // Red for rockfalls
-      renderData(landslides, "#004DA8", landslideLayer); // Blue for landslides
+      // renderData(rockfalls, "#FF0000", rockfallLayer); // Red for rockfalls
+      // renderData(landslides, "#004DA8", landslideLayer); // Blue for landslides
+      renderData(sites, "#a100e0", sitesLayer);
 
       createLegend(); // draws the legend
     } catch (error) {

@@ -89,7 +89,7 @@ h1 {
 }
 
 .legend-text {
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
   font-weight: bold;
   color: inherit;
 }
@@ -114,10 +114,61 @@ h1 {
   border-radius: 50%;
 }
 
+.legend-symbol-square {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  margin-right: 5px;
+  /* border-radius: 50%; */
+}
+
 .legend-symbol.rockfalls {
   background-color: #ff0000;
 }
 
 .legend-symbol.landslides {
   background-color: #004da8;
+}
+
+.legend-symbol.sites {
+  background-color: #a100e0;
+}
+
+.legend-symbol-square.county {
+  border: 2px solid #ffffe4;
+  border-radius: 25%;
+  background-color: hsla(60, 100%, 95%, 0.2);
+}
+
+.legend-symbol-square.d10 {
+  border: 2.5px solid #ff0;
+  border-radius: 25%;
+  background-color: rgba(255, 255, 0, 0.2);
+}
+
+/* Rank Label Styling */
+.rank-label {
+  font-family: "Libre Franklin", sans-serif;
+  font-size: 16px;
+  font-weight: bold;
+  color: #ffffff; 
+  text-align: center;
+  pointer-events: none;
+  text-shadow: 0px 0px 10px rgba(0, 0, 0, 1);
+}
+
+/* Adjust the label positioning to match map elements */
+.rank-label span {
+  display: inline-block;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* Responsive Adjustment for Smaller Screens */
+@media (max-width: 576px) {
+  .rank-label {
+      font-size: 10px;
+      padding: 2px 5px;
+      border-radius: 4px;
+  }
 }
