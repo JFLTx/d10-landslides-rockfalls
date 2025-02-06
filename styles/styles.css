@@ -151,7 +151,7 @@ h1 {
   font-family: "Libre Franklin", sans-serif;
   font-size: 16px;
   font-weight: bold;
-  color: #ffffff; 
+  color: #ffffff;
   text-align: center;
   pointer-events: none;
   text-shadow: 0px 0px 10px rgba(0, 0, 0, 1);
@@ -162,13 +162,15 @@ h1 {
   display: inline-block;
   font-size: 13px;
   font-weight: 600;
+  pointer-events: none;
 }
 
 /* Responsive Adjustment for Smaller Screens */
 @media (max-width: 576px) {
   .rank-label {
-      font-size: 10px;
-      padding: 2px 5px;
-      border-radius: 4px;
+    font-size: 10px;
+    padding: 2px 5px;
+    border-radius: 4px;
+    pointer-events: none;
   }
 }

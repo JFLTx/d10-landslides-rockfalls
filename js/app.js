@@ -94,21 +94,20 @@
         }).addTo(layerGroup);
 
         // **Only label ranks between 1 and 10**
-        if (rank >= 1 && rank <= 10) {
-            // Create a custom divIcon for the rank label
-            const rankLabel = L.divIcon({
-                className: 'rank-label',
-                html: `<span>${rank}</span>`,
-                iconSize: [0, 0],
-                iconAnchor: [5, 10] 
-            });
+        // if (rank >= 1 && rank <= 10) {
+        // Create a custom divIcon for the rank label
+        const rankLabel = L.divIcon({
+          className: "rank-label",
+          html: `<span>${rank}</span>`,
+          iconSize: [0, 0],
+          iconAnchor: [5, 10],
+        });
 
-
-          // Add label to the map
-          L.marker([lat, lon], { icon: rankLabel, pane: "top" }).addTo(
-            layerGroup
-          );
-        }
+        // Add label to the map
+        L.marker([lat, lon], { icon: rankLabel, pane: "top" }).addTo(
+          layerGroup
+        );
+        // }
 
         // Generate the Street View URLs
         const rockfallURL = getURL(rfLat, rfLon);
