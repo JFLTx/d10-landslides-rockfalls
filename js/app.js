@@ -49,7 +49,7 @@
   function calcSize(rank) {
     const maxSize = 28;
     const minSize = 4;
-    return maxSize - ((rank - 1) * (maxSize - minSize)) / 75;
+    return maxSize - ((rank - 1) * (maxSize - minSize)) / 49;
   }
 
   // const url = `https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=$`;
@@ -93,8 +93,6 @@
           pane: "middle",
         }).addTo(layerGroup);
 
-        // **Only label ranks between 1 and 10**
-        // if (rank >= 1 && rank <= 10) {
         // Create a custom divIcon for the rank label
         const rankLabel = L.divIcon({
           className: "rank-label",
@@ -159,21 +157,11 @@
   function createLegend() {
     const legend = L.control({ position: "bottomright" });
 
-    // legend.onAdd = function () {
-    //   const div = L.DomUtil.create("div", "legend");
-    //   div.innerHTML = `
-    //   <h4>Legend</h4>
-    //   <div><span class="legend-symbol rockfalls"></span>Rockfalls</div>
-    //   <div><span class="legend-symbol landslides"></span>Landslides</div>
-    // `;
-    //   return div;
-    // };
-
     legend.onAdd = function () {
       const div = L.DomUtil.create("div", "legend");
       div.innerHTML = `
       <h4>Legend</h4>
-      <div><span class="legend-symbol sites"></span>Top 76 Sites</div>
+      <div><span class="legend-symbol sites"></span>Top 50 Sites</div>
       <div><span class="legend-symbol-square county"></span>District 10 Counties</div>
       <div><span class="legend-symbol-square d10"></span>KYTC District 10</div>`;
       return div;
@@ -190,7 +178,7 @@
       // Load the data
       // const rockfalls = await d3.csv("data/Top 50 Rockfalls.csv");
       // const landslides = await d3.csv("data/Top 50 Landslides.csv");
-      const sites = await d3.csv("data/Top 76 Sites Data.csv");
+      const sites = await d3.csv("data/Top 50 Sites D10.csv");
       const d10 = await d3.json("data/d10-polygon.geojson");
       const counties = await d3.json("data/d10-counties-polygon.geojson");
 
