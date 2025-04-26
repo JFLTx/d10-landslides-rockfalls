@@ -1,24 +1,18 @@
 (function () {
-  // HTML options
   const spinner = document.querySelector(".spinner-container");
-
-  // Map options
-  const options = {
+  const map = L.map("map", {
     zoomSnap: 0.1,
     center: [37.4769, -82.5242],
     zoom: 12,
-  };
+  });
 
-  // Create the Leaflet map
-  const map = L.map("map", options);
-
-  // create Leaflet panes for ordering map layers
-  setPanes = ["bottom", "middle", "top"];
-  setPanes.forEach((pane, i) => {
+  // Create Leaflet panes
+  ["bottom", "middle", "top"].forEach((pane, i) => {
     map.createPane(pane);
     map.getPane(pane).style.zIndex = 401 + i;
   });
 
+  // Base Layers
   L.tileLayer(
     "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
     {
@@ -26,7 +20,6 @@
     }
   ).addTo(map);
 
-  // labels for map
   L.tileLayer(
     "https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.png",
     {
@@ -36,36 +29,23 @@
     }
   ).addTo(map);
 
-  // Function to show the spinner
   function showSpinner() {
-    spinner.style.display = "flex"; // Show the spinner
+    spinner.style.display = "flex";
   }
-
-  // Function to hide the spinner
   function hideSpinner() {
-    spinner.style.display = "none"; // Hide the spinner
+    spinner.style.display = "none";
   }
 
-  function calcSize(rank) {
-    const maxSize = 28;
-    const minSize = 4;
-    return maxSize - ((rank - 1) * (maxSize - minSize)) / 49;
-  }
-
-  // const url = `https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=$`;
-
-  // Function to construct a Street View URL
   function getURL(lat, lon) {
     return lat === "N/A" || lon === "N/A"
       ? "N/A"
       : `https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${lat},${lon}`;
   }
 
-  // function to render the data
   function renderData(data, color, layerGroup) {
-    data.forEach((row, index) => {
-      const lat = parseFloat(row.DOTLatitude);
-      const lon = parseFloat(row.DOTLongitude);
+    data.forEach((row) => {
+      const lat = parseFloat(row.DOTLatitude),
+        lon = parseFloat(row.DOTLongitude);
       const rfLat =
         row.RFLatitude === "N/A" ? "N/A" : parseFloat(row.RFLatitude);
       const rfLon =
@@ -75,17 +55,12 @@
       const lsLon =
         row.LSLongitude === "N/A" ? "N/A" : parseFloat(row.LSLongitude);
       const rank = parseInt(row.Rank);
-      const route = row.RT_Label;
-      const siteCo = row.County;
-      const fc = row.FunctionalClassification;
-      const rfMP = row.RFMP;
-      const lsMP = row.LSMP;
+      const detourLength = parseFloat(row.DetourLength);
 
       if (!isNaN(lat) && !isNaN(lon) && !isNaN(rank)) {
-        const size = calcSize(rank);
 
         const marker = L.circleMarker([lat, lon], {
-          radius: size,
+          radius: 10,
           weight: 2,
           color: color,
           fillColor: color,
@@ -105,123 +80,133 @@
         L.marker([lat, lon], { icon: rankLabel, pane: "top" }).addTo(
           layerGroup
         );
-        // }
+        
 
-        // Generate the Street View URLs
         const rockfallURL = getURL(rfLat, rfLon);
         const landslideURL = getURL(lsLat, lsLon);
 
-        // Generate the Street View URL
-        // const streetViewUrl = getURL(lat, lon);
-
         const popup = `
           <strong>Rank</strong>: ${rank}<br>
-          <strong>County</strong>: ${siteCo}<br>
-          <strong>Route</strong>: ${route}<br>
-          <strong>Functional Classification</strong>: ${fc}<br>
+          <strong>County</strong>: ${row.County}<br>
+          <strong>Route</strong>: ${row.RT_Label}<br>
+          <strong>Functional Classification</strong>: ${
+            row.FunctionalClassification
+          }<br>
           <strong>Rockfall MP</strong>: ${
             rockfallURL === "N/A"
               ? "N/A"
-              : `<a href="${rockfallURL}" target="_blank">${rfMP}</a>`
+              : `<a href="${rockfallURL}" target="_blank">${row.RFMP}</a>`
           }<br>
           <strong>Landslide MP</strong>: ${
             landslideURL === "N/A"
               ? "N/A"
-              : `<a href="${landslideURL}" target="_blank">${lsMP}</a>`
-          }
+              : `<a href="${landslideURL}" target="_blank">${row.LSMP}</a>`
+          }<br>
         `;
 
-        // Add popup with rank
         marker.bindPopup(popup);
-
-        marker.on("mouseover", function () {
-          this.setStyle({
-            weight: 2.5,
-            color: "#FF0",
-            fillOpacity: 1,
-          });
-        });
-
-        marker.on("mouseout", function () {
-          this.setStyle({
-            weight: 2,
-            color: color,
-            fillOpacity: 0.6,
-          });
-        });
+        marker.on("mouseover", () =>
+          marker.setStyle({ weight: 2.5, color: "#FF0", fillOpacity: 1 })
+        );
+        marker.on("mouseout", () =>
+          marker.setStyle({ weight: 2, color: color, fillOpacity: 0.6 })
+        );
       }
     });
   }
 
-  // Create a legend
   function createLegend() {
-    const legend = L.control({ position: "bottomright" });
-
-    legend.onAdd = function () {
-      const div = L.DomUtil.create("div", "legend");
-      div.innerHTML = `
-      <h4>Legend</h4>
+    const legendDiv = document.getElementById("legend");
+    legendDiv.innerHTML = `
       <div><span class="legend-symbol sites"></span>Top 50 Sites</div>
       <div><span class="legend-symbol-square county"></span>District 10 Counties</div>
-      <div><span class="legend-symbol-square d10"></span>KYTC District 10</div>`;
-      return div;
-    };
-
-    legend.addTo(map);
+      <div><span class="legend-symbol-square d10"></span>KYTC District 10</div>
+    `;
   }
 
-  // Load the data asynchronously
   async function fetchData() {
     showSpinner();
 
     try {
-      // Load the data
-      // const rockfalls = await d3.csv("data/Top 50 Rockfalls.csv");
-      // const landslides = await d3.csv("data/Top 50 Landslides.csv");
-      const sites = await d3.csv("data/Top 50 Sites D10.csv");
+      const sites = await d3.csv("data/Top_50_Sites_Final.csv");
+
       const d10 = await d3.json("data/d10-polygon.geojson");
       const counties = await d3.json("data/d10-counties-polygon.geojson");
 
-      const county = L.geoJSON(counties, {
-        style: function (feature) {
-          return {
-            color: "#ffffe4",
-            weight: 2,
-            fillOpacity: 0,
-          };
-        },
+      L.geoJSON(counties, {
+        style: { color: "#ffffe4", weight: 2, fillOpacity: 0 },
+      }).addTo(map);
+      L.geoJSON(d10, {
+        style: { color: "#ff0", weight: 4, fillOpacity: 0 },
       }).addTo(map);
 
-      const district10 = L.geoJSON(d10, {
-        style: function (feature) {
-          return {
-            color: "#ff0",
-            weight: 4,
-            fillOpacity: 0,
-          };
-        },
-      }).addTo(map);
+      map.fitBounds(L.geoJSON(d10).getBounds(), { padding: [20, 20] });
 
-      // Fit the bounds to the district limits
-      map.fitBounds(district10.getBounds(), {
-        padding: [20, 20],
-      });
-
-      // Create layer groups for rockfalls and landslides
-      // const rockfallLayer = L.layerGroup().addTo(map);
-      // const landslideLayer = L.layerGroup().addTo(map);
       const sitesLayer = L.layerGroup().addTo(map);
 
-      // Render the data points
-      // renderData(rockfalls, "#FF0000", rockfallLayer); // Red for rockfalls
-      // renderData(landslides, "#004DA8", landslideLayer); // Blue for landslides
       renderData(sites, "#a100e0", sitesLayer);
+      createLegend();
 
-      createLegend(); // draws the legend
+      const sidePanel = document.getElementById("side-panel");
+      const siteList = document.getElementById("site-list");
+
+      sites.sort((a, b) => parseInt(a.Rank) - parseInt(b.Rank));
+      sites.forEach((site) => {
+        const siteItem = document.createElement("div");
+        siteItem.className = "legend-text";
+        siteItem.innerHTML = `<span style="font-weight:700;">Rank ${site.Rank}</span>: ${site.RT_Label}, ${site.County} COUNTY`;
+
+        siteItem.addEventListener("click", () => {
+          const lat = parseFloat(site.DOTLatitude);
+          const lon = parseFloat(site.DOTLongitude);
+          const rank = parseInt(site.Rank);
+
+          if (!isNaN(lat) && !isNaN(lon)) {
+            map.flyTo([lat, lon], 14, { duration: 1.0 });
+
+            sitesLayer.eachLayer((layer) => {
+              const layerLatLng = layer.getLatLng();
+              if (
+                layerLatLng &&
+                layerLatLng.lat === lat &&
+                layerLatLng.lng === lon
+              ) {
+                layer.openPopup();
+              }
+            });
+
+            document
+              .querySelectorAll(".legend-text")
+              .forEach((el) => el.classList.remove("active"));
+            siteItem.classList.add("active");
+          }
+        });
+
+        siteList.appendChild(siteItem);
+      });
+
+      // Clear Button
+      document.getElementById("clear-btn").addEventListener("click", () => {
+        map.fitBounds(L.geoJSON(d10).getBounds(), { padding: [20, 20] });
+
+        // Close any open popups
+        map.closePopup();
+
+        // Fade out active site
+        document.querySelectorAll(".legend-text.active").forEach((el) => {
+          el.style.transition = "background-color 0.4s ease";
+          el.style.backgroundColor = "#fff"; // Fade it back to white
+          setTimeout(() => {
+            el.classList.remove("active"); // Actually remove class after fade
+          }, 400);
+        });
+      });
+
+
+
     } catch (error) {
       console.error("Error loading data:", error);
     } finally {
-      // when success happens!
       hideSpinner();
     }
   }
