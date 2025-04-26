@@ -255,7 +255,9 @@ p {
   display: inline-block;
   font-size: 13px;
   font-weight: 600;
+  pointer-events: none;
 }
+
 
 #panel-controls {
   display: flex;
@@ -316,4 +318,13 @@ hr {
   background: linear-gradient(to right,#ffffff, #7f7f7f, #7f7f7f, #ffffff);
   margin: 20px 0;
   opacity: 0.25;
+=======
+/* Responsive Adjustment for Smaller Screens */
+@media (max-width: 576px) {
+  .rank-label {
+    font-size: 10px;
+    padding: 2px 5px;
+    border-radius: 4px;
+    pointer-events: none;
+  }
 }

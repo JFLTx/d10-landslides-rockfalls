@@ -68,17 +68,19 @@
           pane: "middle",
         }).addTo(layerGroup);
 
-        if (rank >= 1) {
-          const rankLabel = L.divIcon({
-            className: "rank-label",
-            html: `<span>${rank}</span>`,
-            iconSize: [0, 0],
-            iconAnchor: [5, 10],
-          });
-          L.marker([lat, lon], { icon: rankLabel, pane: "top" }).addTo(
-            layerGroup
-          );
-        }
+        // Create a custom divIcon for the rank label
+        const rankLabel = L.divIcon({
+          className: "rank-label",
+          html: `<span>${rank}</span>`,
+          iconSize: [0, 0],
+          iconAnchor: [5, 10],
+        });
+
+        // Add label to the map
+        L.marker([lat, lon], { icon: rankLabel, pane: "top" }).addTo(
+          layerGroup
+        );
+        
 
         const rockfallURL = getURL(rfLat, rfLon);
         const landslideURL = getURL(lsLat, lsLon);
@@ -127,6 +129,7 @@
 
     try {
       const sites = await d3.csv("data/Top_50_Sites_Final.csv");
+
       const d10 = await d3.json("data/d10-polygon.geojson");
       const counties = await d3.json("data/d10-counties-polygon.geojson");
 
