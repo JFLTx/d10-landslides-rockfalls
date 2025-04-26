@@ -1,0 +1,29 @@
+{
+  "name": "d10-landslides-rockfalls",
+  "version": "1.0.0",
+  "description": "Planning study to prioritize roadway safety by rockfall/landslide occurrences.",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JFLTx/d10-landslides-rockfalls.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/JFLTx/d10-landslides-rockfalls/issues"
+  },
+  "homepage": "https://github.com/JFLTx/d10-landslides-rockfalls#readme",
+  "dependencies": {
+    "@turf/turf": "^7.2.0",
+    "d3": "^7.9.0",
+    "maplibre-gl": "^5.4.0",
+    "vite": "^6.3.3"
+  }
+}

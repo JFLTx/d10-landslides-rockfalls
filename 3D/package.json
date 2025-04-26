@@ -1,0 +1,20 @@
+{
+  "name": "d10-landslides-rockfalls",
+  "version": "1.0.0",
+  "main": "elev.js",
+  "scripts": {
+    "dev": "vite",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "maplibre-gl": "^5.4.0",
+    "pmtiles": "^4.3.0"
+  },
+  "devDependencies": {
+    "vite": "^6.3.3"
+  }
+}

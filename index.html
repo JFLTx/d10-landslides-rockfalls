@@ -33,7 +33,53 @@
   </head>
 
   <body>
-    <!-- SVG spinner when data is loading -->
+    <!-- Main container with side-panel and map -->
+    <div id="container">
+      <!-- Side panel: header, legend, and controls -->
+      <div id="side-panel">
+        <h1>District 10 Landslide/Rockfall Study</h1>
+
+        <div id="logos">
+          <img src="images/APS GEO-logo.png" alt="APS GEO Logo" />
+          <img src="images/pec-logo.png" alt="PEC Logo" />
+        </div>
+
+        <hr />
+
+        <p>
+          This interactive web map was designed for <a target="_blank" href="https://www.apsgeo.com/">APS GEO</a> and KYTC District 10
+          courtesy of
+          <a target="_blank" href="https://www.palmernet.com/"
+            >Palmer Engineering</a
+          >.
+        </p>
+
+        <!-- Custom legend container -->
+        <div id="legend"></div>
+
+        <p>
+          The below rank values were developed by APS GEO and represent
+          landslide/rockfall locations of concern throughout District 10. 
+        </p>
+        <p>
+          Use the below buttons to zoom to each location. Optionally, you can view the sites in 3D.
+        </p>
+
+        <div id="panel-controls">
+          <!-- <button id="collapse-btn">☰</button> -->
+          <button id="clear-btn">Reset Default Map View</button>
+          <button id="switchTo3D">View in 3D</button>
+        </div>
+
+        <hr />
+
+        <div id="site-list"></div>
+      </div>
+      <!-- Map container -->
+      <div id="map"></div>
+    </div>
+
+    <!-- Optional: Spinner for data loading -->
     <div class="spinner-container">
       <svg
         width="100"
@@ -83,16 +129,21 @@
       </svg>
     </div>
 
-    <h1>District 10 Rockfall/Landslide Study</h1>
-
-    <!-- MAP -->
-    <div id="map"></div>
+    <!-- send the user to the 3D viewer -->
+    <script>
+      document
+        .getElementById("switchTo3D")
+        .addEventListener("click", function () {
+          window.open("3D/index.html", "_blank");
+        });
+    </script>
 
     <!-- leaflet library  -->
     <script
       src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"
       integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM="
-      crossorigin=""s
+      crossorigin=""
+      s
     ></script>
 
     <!-- D3 library  -->
