@@ -1,7 +1,7 @@
-import maplibregl from "maplibre-gl";
-import * as pmtiles from "pmtiles";
-import * as d3 from "d3";
-import * as turf from "@turf/turf";
+// import maplibregl from "maplibre-gl";
+// import * as pmtiles from "pmtiles";
+// import * as d3 from "d3";
+// import * as turf from "@turf/turf";
 
 // Set up pmtiles protocol
 let protocol = new pmtiles.Protocol();
