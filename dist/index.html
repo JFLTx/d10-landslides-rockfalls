@@ -40,129 +40,88 @@
     <!-- Turf.js -->
     <script src="https://unpkg.com/@turf/turf@6.5.0/turf.min.js"></script>
 
-    <!-- Add styles -->
+    <!-- Add styles -->
+
     <link rel="stylesheet" crossorigin href="/assets/index-D2jAdZtA.css">
   </head>
 
-  <body>
-    <!-- Main container with side-panel and map -->
-    <div id="container">
-      <!-- Side panel: header, legend, and controls -->
-      <div id="side-panel">
-        <h1>District 10 Landslide/Rockfall Study</h1>
+  <style>
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      font-family: "Libre Franklin", sans-serif;
+    }
+    #map {
+      width: 100%;
+      height: 100%;
+    }
+    .spinner-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      position: absolute;
+      width: 100%;
+      background: rgba(255, 255, 255, 0.8);
+      z-index: 9999;
+    }
+  </style>
+</head>
 
-        <div id="logos">
-          <img src="/assets/APS%20GEO-logo-CBlleAyO.png" alt="APS GEO Logo" />
-          <img src="/assets/pec-logo-C1VvcttB.png" alt="PEC Logo" />
-        </div>
+<body>
+  <div id="map"></div>
 
-        <hr />
-
-        <p>
-          This interactive web map was designed for
-          <a target="_blank" href="https://www.apsgeo.com/">APS GEO</a> and KYTC
-          District 10 courtesy of
-          <a target="_blank" href="https://www.palmernet.com/"
-            >Palmer Engineering</a
-          >.
-        </p>
-
-        <!-- Custom legend container -->
-        <div id="legend"></div>
-
-        <p>
-          The below rank values were developed by APS GEO and represent
-          landslide/rockfall locations of concern throughout District 10.
-        </p>
-        <p>
-          Use the below buttons to zoom to each location.
-          <!-- Optionally, you can view the sites in 3D. -->
-        </p>
-
-        <div id="panel-controls">
-          <button id="clear-btn">Reset Default Map View</button>
-          <!-- <button id="switchTo3D">View in 3D</button> -->
-        </div>
-
-        <hr />
-
-        <div id="site-list"></div>
-      </div>
-      <!-- Map container -->
-      <div id="map"></div>
-    </div>
-
-    <!-- Optional: Spinner for data loading -->
-    <div class="spinner-container">
-      <svg
-        width="100"
-        height="100"
-        viewBox="0 0 24 24"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <style>
-          .spinner_nOfF {
-            animation: spinner_qtyZ 2s cubic-bezier(0.36, 0.6, 0.31, 1) infinite;
+  <div class="spinner-container">
+    <svg
+      width="100"
+      height="100"
+      viewBox="0 0 24 24"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <style>
+        .spinner_nOfF {
+          animation: spinner_qtyZ 2s cubic-bezier(0.36, 0.6, 0.31, 1) infinite;
+        }
+        .spinner_fVhf {
+          animation-delay: -0.5s;
+        }
+        .spinner_piVe {
+          animation-delay: -1s;
+        }
+        .spinner_MSNs {
+          animation-delay: -1.5s;
+        }
+        @keyframes spinner_qtyZ {
+          0% {
+            r: 0;
           }
-          .spinner_fVhf {
-            animation-delay: -0.5s;
+          25% {
+            r: 3px;
+            cx: 4px;
           }
-          .spinner_piVe {
-            animation-delay: -1s;
+          50% {
+            r: 3px;
+            cx: 12px;
           }
-          .spinner_MSNs {
-            animation-delay: -1.5s;
+          75% {
+            r: 3px;
+            cx: 20px;
           }
-          @keyframes spinner_qtyZ {
-            0% {
-              r: 0;
-            }
-            25% {
-              r: 3px;
-              cx: 4px;
-            }
-            50% {
-              r: 3px;
-              cx: 12px;
-            }
-            75% {
-              r: 3px;
-              cx: 20px;
-            }
-            100% {
-              r: 0;
-              cx: 20px;
-            }
+          100% {
+            r: 0;
+            cx: 20px;
           }
-        </style>
-        <circle class="spinner_nOfF" cx="4" cy="12" r="3" />
-        <circle class="spinner_nOfF spinner_fVhf" cx="4" cy="12" r="3" />
-        <circle class="spinner_nOfF spinner_piVe" cx="4" cy="12" r="3" />
-        <circle class="spinner_nOfF spinner_MSNs" cx="4" cy="12" r="3" />
-      </svg>
-    </div>
+        }
+      </style>
+      <circle class="spinner_nOfF" cx="4" cy="12" r="3" />
+      <circle class="spinner_nOfF spinner_fVhf" cx="4" cy="12" r="3" />
+      <circle class="spinner_nOfF spinner_piVe" cx="4" cy="12" r="3" />
+      <circle class="spinner_nOfF spinner_MSNs" cx="4" cy="12" r="3" />
+    </svg>
+  </div>
 
-    <!-- send the user to the 3D viewer -->
-    <!-- <script>
-      document
-        .getElementById("switchTo3D")
-        .addEventListener("click", function () {
-          window.open("3D/index.html", "_blank");
-        });
-    </script> -->
-
-    <!-- leaflet library  -->
-    <script
-      src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"
-      integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM="
-      crossorigin=""
-      s
-    ></script>
-
-    <!-- D3 library  -->
-    <script src="https://d3js.org/d3.v7.js"></script>
-
-    <!-- Load external JavaScript app from the JS folder -->
-    <script src="js/app.js"></script>
+  <script type="module" src="3D/elev.js"></script>
   </body>
 </html>
