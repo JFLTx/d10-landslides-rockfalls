@@ -1,7 +1,7 @@
-// import maplibregl from "maplibre-gl";
-// import * as pmtiles from "pmtiles";
-// import * as d3 from "d3";
-// import * as turf from "@turf/turf";
+import maplibregl from "maplibre-gl";
+import * as pmtiles from "pmtiles";
+import * as d3 from "d3";
+import * as turf from "@turf/turf";
 
 // Set up pmtiles protocol
 let protocol = new pmtiles.Protocol();
@@ -85,13 +85,13 @@ function createMap(d10GeoJSON, countiesGeoJSON) {
           ],
           tileSize: 256,
         },
-        hillshade: {
-          type: "raster",
-          tiles: [
-            "https://kygisserver.ky.gov/arcgis/rest/services/WGS84WM_Services/Ky_MultiDirectional_Hillshade_WGS84WM/MapServer/tile/{z}/{y}/{x}",
-          ],
-          tileSize: 512,
-        },
+        // hillshade: {
+        //   type: "raster",
+        //   tiles: [
+        //     "https://kygisserver.ky.gov/arcgis/rest/services/WGS84WM_Services/Ky_MultiDirectional_Hillshade_WGS84WM/MapServer/tile/{z}/{y}/{x}",
+        //   ],
+        //   tileSize: 512,
+        // },
         dem: {
           type: "raster-dem",
           url: "./terrain.json",
@@ -127,12 +127,12 @@ function createMap(d10GeoJSON, countiesGeoJSON) {
           type: "background",
           paint: { "background-color": "#ddeeff" },
         },
-        {
-          id: "hillshade",
-          type: "raster",
-          source: "hillshade",
-          paint: { "raster-opacity": 0.3 },
-        },
+        // {
+        //   id: "hillshade",
+        //   type: "raster",
+        //   source: "hillshade",
+        //   paint: { "raster-opacity": 0.3 },
+        // },
         {
           id: "satellite",
           type: "raster",
