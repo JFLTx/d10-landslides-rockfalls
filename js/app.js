@@ -13,14 +13,32 @@
   });
 
   // Base Layers
-  L.tileLayer(
+  const imagery = L.tileLayer(
     "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
-    {
-      attribution: "Imagery &copy; Esri",
-    }
-  ).addTo(map);
+    { attribution: "Imagery &copy; Esri", opacity: 0.8 }
+  );
 
-  L.tileLayer(
+  const darkTopo = L.tileLayer(
+    "https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.{ext}",
+    {
+      minZoom: 0,
+      maxZoom: 20,
+      attribution:
+        '&copy; <a href="https://www.stadiamaps.com/" target="_blank">Stadia Maps</a> &copy; <a href="https://openmaptiles.org/" target="_blank">OpenMapTiles</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+      ext: "png",
+    }
+  );
+
+  const topo = L.tileLayer(
+    "https://server.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer/tile/{z}/{y}/{x}",
+    {
+      attribution:
+        "Tiles &copy; Esri &mdash; National Geographic, Esri, DeLorme, NAVTEQ, UNEP-WCMC, USGS, NASA, ESA, METI, NRCAN, GEBCO, NOAA, iPC",
+      maxZoom: 16,
+    }
+  );
+
+  const labels = L.tileLayer(
     "https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.png",
     {
       attribution:
@@ -28,6 +46,82 @@
       pane: "top",
     }
   ).addTo(map);
+
+  const basemaps = {
+    Imagery: imagery,
+    "Dark Gray": darkTopo,
+    Topographic: topo,
+    // Labels: labels,
+  };
+
+  const basemapThumbnails = {
+    Imagery: "images/imagery-thumb.jpg",
+    "Dark Gray": "images/darkTopo-thumb.JPG",
+    Topographic: "images/topo-thumb.JPG",
+  };
+
+  imagery.addTo(map);
+  labels.addTo(map);
+
+  const basemapControl = L.control({ position: "topright" });
+
+  basemapControl.onAdd = function (map) {
+    const container = L.DomUtil.create(
+      "div",
+      "leaflet-control-layers leaflet-control"
+    );
+    container.innerHTML = `
+    <button id="basemap-button" class="leaflet-bar">Switch Basemap</button>
+    <div id="basemap-options" style="display:none; padding:5px; text-align:center;">
+      ${Object.keys(basemaps)
+        .map(
+          (name) => `
+        <img src="${basemapThumbnails[name]}" title="${name}" data-layer="${name}" style="width:50px;height:50px;margin:5px;cursor:pointer;border:2px solid #ccc;border-radius:5px;">
+      `
+        )
+        .join("")}
+    </div>
+  `;
+    return container;
+  };
+
+  basemapControl.addTo(map);
+
+  // Add click listeners after a delay to ensure it's loaded
+  setTimeout(() => {
+    const basemapButton = document.getElementById("basemap-button");
+    const basemapOptions = document.getElementById("basemap-options");
+
+    basemapButton.addEventListener("click", () => {
+      // Toggle showing thumbnails
+      basemapOptions.style.display =
+        basemapOptions.style.display === "none" ? "block" : "none";
+    });
+
+    document.querySelectorAll("#basemap-options img").forEach((img) => {
+      img.addEventListener("click", function () {
+        const layerName = this.getAttribute("data-layer");
+
+        // Remove all basemaps and labels first
+        Object.values(basemaps).forEach((layer) => map.removeLayer(layer));
+        map.removeLayer(labels);
+
+        // Add selected basemap
+        basemaps[layerName].addTo(map);
+
+        // If imagery selected, also add labels
+        if (layerName === "Imagery") {
+          labels.addTo(map);
+        }
+
+        // Update button text
+        basemapButton.textContent = `${layerName}`;
+
+        // Hide the thumbnail selector after choosing
+        basemapOptions.style.display = "none";
+      });
+    });
+  }, 1000);
 
   function showSpinner() {
     spinner.style.display = "flex";
@@ -58,7 +152,6 @@
       const detourLength = parseFloat(row.DetourLength);
 
       if (!isNaN(lat) && !isNaN(lon) && !isNaN(rank)) {
-
         const marker = L.circleMarker([lat, lon], {
           radius: 10,
           weight: 2,
@@ -80,7 +173,6 @@
         L.marker([lat, lon], { icon: rankLabel, pane: "top" }).addTo(
           layerGroup
         );
-        
 
         const rockfallURL = getURL(rfLat, rfLon);
         const landslideURL = getURL(lsLat, lsLon);
@@ -201,9 +293,6 @@
           }, 400);
         });
       });
-
-
-
     } catch (error) {
       console.error("Error loading data:", error);
     } finally {
