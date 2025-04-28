@@ -3,8 +3,10 @@
 // import * as d3 from "d3";
 // import * as turf from "@turf/turf";
 
+import { PMTiles } from "pmtiles";
+
 // Set up pmtiles protocol
-let protocol = new pmtiles.Protocol();
+let protocol = new PMTiles.Protocol();
 maplibregl.addProtocol("pmtiles", protocol.tile);
 
 let map;
