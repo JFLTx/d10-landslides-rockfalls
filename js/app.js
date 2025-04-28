@@ -55,9 +55,9 @@
   };
 
   const basemapThumbnails = {
-    Imagery: "images/imagery-thumb.jpg",
-    "Dark Gray": "images/darkTopo-thumb.JPG",
-    Topographic: "images/topo-thumb.JPG",
+    Imagery: "images/imagery-thumb1.jpg",
+    "Dark Gray": "images/darkTopo-thumb1.jpg",
+    Topographic: "images/topo-thumb1.jpg",
   };
 
   imagery.addTo(map);
