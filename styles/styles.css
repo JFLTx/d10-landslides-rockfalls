@@ -258,7 +258,6 @@ p {
   pointer-events: none;
 }
 
-
 #panel-controls {
   display: flex;
   justify-content: center;
@@ -267,7 +266,9 @@ p {
 }
 
 #collapse-btn,
-#clear-btn, #switchTo3D {
+#clear-btn,
+#switchTo3D,
+#basemap-button {
   background-color: #4caf50;
   border: none;
   color: white;
@@ -281,7 +282,9 @@ p {
 }
 
 #collapse-btn:hover,
-#clear-btn:hover, #switchTo3D:hover {
+#clear-btn:hover,
+#switchTo3D:hover,
+#basemap-button {
   background-color: #328636;
   transform: scale(1.05);
 }
@@ -315,7 +318,7 @@ p {
 hr {
   border: none;
   height: 2px;
-  background: linear-gradient(to right,#ffffff, #7f7f7f, #7f7f7f, #ffffff);
+  background: linear-gradient(to right, #ffffff, #7f7f7f, #7f7f7f, #ffffff);
   margin: 20px 0;
   opacity: 0.25;
 }
@@ -328,4 +331,40 @@ hr {
     border-radius: 4px;
     pointer-events: none;
   }
+}
+
+.basemap-switcher {
+  background: rgba(255, 255, 255, 0.9);
+  padding: 10px;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+  text-align: center;
+}
+
+.basemap-switcher h4 {
+  margin: 0 0 8px 0;
+  font-size: 1em;
+  color: #333;
+}
+
+.basemap-thumbnails {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+.basemap-thumbnails img {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border: 2px solid #ccc;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.basemap-thumbnails img:hover {
+  transform: scale(1.1);
+  border-color: #007bff;
+  box-shadow: 0 0 8px #007bff;
 }
