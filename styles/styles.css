@@ -71,7 +71,11 @@ p {
   font-family: "Libre Franklin", sans-serif;
   font-size: 14px;
   border-radius: 8px;
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.4);
+}
+
+.leaflet-marker-icon {
+  transition: opacity 0.4s ease;
 }
 
 .leaflet-popup-content strong {
@@ -90,6 +94,23 @@ p {
 
 .leaflet-popup-content img {
   width: 100%;
+}
+
+.leaflet-marker-icon.custom-circle-marker {
+  background-color: #a100e0;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.4);
+  transition: transform 0.2s ease;
+  transform-origin: center center;
+}
+
+.leaflet-marker-icon.custom-circle-marker:hover {
+  transform: scale(1.4);
+  z-index: 999;
+  cursor: pointer;
 }
 
 #site-list {
@@ -253,7 +274,7 @@ p {
 /* Adjust the label positioning to match map elements */
 .rank-label span {
   display: inline-block;
-  font-size: 13px;
+  font-size: 16px;
   font-weight: 600;
   pointer-events: none;
 }

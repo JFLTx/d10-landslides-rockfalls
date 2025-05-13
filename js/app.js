@@ -7,9 +7,16 @@
   });
 
   // Create Leaflet panes
-  ["bottom", "middle", "top"].forEach((pane, i) => {
+  ["bottom", "middle", "top", "labels"].forEach((pane, i) => {
     map.createPane(pane);
     map.getPane(pane).style.zIndex = 401 + i;
+  });
+
+  const icon = L.divIcon({
+    className: "custom-circle-marker",
+    iconSize: [20, 20],
+    iconAnchor: [10, 10], // center of the point's lat/lon
+    popupAnchor: [0, -10], // offset half the distance of the iconSize val
   });
 
   // Base Layers
@@ -135,29 +142,36 @@
       : `https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${lat},${lon}`;
   }
 
-  function renderData(data, color, layerGroup) {
+  function renderData(data, color, layerGroup, labelsLayer) {
     data.forEach((row) => {
-      const lat = parseFloat(row.DOTLatitude),
-        lon = parseFloat(row.DOTLongitude);
-      const rfLat =
-        row.RFLatitude === "N/A" ? "N/A" : parseFloat(row.RFLatitude);
-      const rfLon =
-        row.RFLongitude === "N/A" ? "N/A" : parseFloat(row.RFLongitude);
-      const lsLat =
-        row.LSLatitude === "N/A" ? "N/A" : parseFloat(row.LSLatitude);
-      const lsLon =
-        row.LSLongitude === "N/A" ? "N/A" : parseFloat(row.LSLongitude);
+      const lat = parseFloat(row.Latitude),
+        lon = parseFloat(row.Longitude);
+      // const rfLat =
+      //   row.RFLatitude === "N/A" ? "N/A" : parseFloat(row.RFLatitude);
+      // const rfLon =
+      //   row.RFLongitude === "N/A" ? "N/A" : parseFloat(row.RFLongitude);
+      // const lsLat =
+      //   row.LSLatitude === "N/A" ? "N/A" : parseFloat(row.LSLatitude);
+      // const lsLon =
+      //   row.LSLongitude === "N/A" ? "N/A" : parseFloat(row.LSLongitude);
       const rank = parseInt(row.Rank);
-      const detourLength = parseFloat(row.DetourLength);
+      const detourLength = parseFloat(row["Detour Length (mi)"]);
+      const FS = row["Field Score"];
+      const RI = row["Risk Index"];
+      const ADT = row["ADT(max)"];
+      const ES = row["Exposure Score (MAX%)"];
+      const project = row["Project Type"];
 
       if (!isNaN(lat) && !isNaN(lon) && !isNaN(rank)) {
-        const marker = L.circleMarker([lat, lon], {
-          radius: 10,
-          weight: 2,
-          color: color,
-          fillColor: color,
-          fillOpacity: 0.6,
+        const marker = L.marker([lat, lon], {
+          // radius: 10,
+          // weight: 2,
+          // color: color,
+          // fillColor: color,
+          // fillOpacity: 0.6,
+          icon: icon,
           pane: "middle",
+          customData: { rank: rank },
         }).addTo(layerGroup);
 
         // Create a custom divIcon for the rank label
@@ -169,39 +183,44 @@
         });
 
         // Add label to the map
-        L.marker([lat, lon], { icon: rankLabel, pane: "top" }).addTo(
-          layerGroup
-        );
+        const labelMarker = L.marker([lat, lon], {
+          icon: rankLabel,
+          pane: "labels", // all labels render at this level first
+        });
 
-        const rockfallURL = getURL(rfLat, rfLon);
-        const landslideURL = getURL(lsLat, lsLon);
+        labelMarker.rank = rank; // store rank for reference
+        labelsLayer.addLayer(labelMarker);
+
+        // const rockfallURL = getURL(rfLat, rfLon);
+        // const landslideURL = getURL(lsLat, lsLon);
+        const URL = getURL(lat, lon);
 
         const popup = `
           <strong>Rank</strong>: ${rank}<br>
           <strong>County</strong>: ${row.County}<br>
-          <strong>Route</strong>: ${row.RT_Label}<br>
+          <strong>Route</strong>: KY-${row["Road #"]}<br>
+          <strong>Mile Point</strong>: ${
+            URL === "N/A"
+              ? "N/A"
+              : `<a href="${URL}" target="_blank">${row.MP}</a>`
+          }<br>
+          <strong>Risk Index</strong>: ${RI}<br>
+          <strong>Field Score</strong>: ${FS}<br>
+          <strong>Exposure Score (Max %)</strong>: ${ES}<br>
+          <strong>ADT</strong>: ${ADT}<br>
+          <strong>Detour Length (mi)</strong>: ${detourLength}<br>
           <strong>Functional Classification</strong>: ${
-            row.FunctionalClassification
-          }<br>
-          <strong>Rockfall MP</strong>: ${
-            rockfallURL === "N/A"
-              ? "N/A"
-              : `<a href="${rockfallURL}" target="_blank">${row.RFMP}</a>`
-          }<br>
-          <strong>Landslide MP</strong>: ${
-            landslideURL === "N/A"
-              ? "N/A"
-              : `<a href="${landslideURL}" target="_blank">${row.LSMP}</a>`
-          }<br>
+            row["Functional Classification"]
+          }
         `;
 
         marker.bindPopup(popup);
-        marker.on("mouseover", () =>
-          marker.setStyle({ weight: 2.5, color: "#FF0", fillOpacity: 1 })
-        );
-        marker.on("mouseout", () =>
-          marker.setStyle({ weight: 2, color: color, fillOpacity: 0.6 })
-        );
+        // marker.on("mouseover", () => {
+        //   marker.getElement().style.transform = "scale(1.4)";
+        // });
+        // marker.on("mouseout", () => {
+        //   marker.getElement().style.transform = "scale(1)";
+        // });
       }
     });
   }
@@ -219,7 +238,7 @@
     showSpinner();
 
     try {
-      const sites = await d3.csv("data/Top_50_Sites_Final.csv");
+      const sites = await d3.csv("data/Top-Sites-Final.csv");
 
       const d10 = await d3.json("data/d10-polygon.geojson");
       const counties = await d3.json("data/d10-counties-polygon.geojson");
@@ -234,8 +253,10 @@
       map.fitBounds(L.geoJSON(d10).getBounds(), { padding: [20, 20] });
 
       const sitesLayer = L.layerGroup().addTo(map);
+      const labelsLayer = L.layerGroup().addTo(map); // separate group for labels
 
-      renderData(sites, "#a100e0", sitesLayer);
+      renderData(sites, "#a100e0", sitesLayer, labelsLayer);
+
       createLegend();
 
       const sidePanel = document.getElementById("side-panel");
@@ -245,11 +266,11 @@
       sites.forEach((site) => {
         const siteItem = document.createElement("div");
         siteItem.className = "legend-text";
-        siteItem.innerHTML = `<span style="font-weight:700;">Rank ${site.Rank}</span>: ${site.RT_Label}, ${site.County} COUNTY`;
+        siteItem.innerHTML = `<span style="font-weight:700;">Rank ${site.Rank}</span>: KY-${site["Road #"]}, ${site.County} COUNTY`;
 
         siteItem.addEventListener("click", () => {
-          const lat = parseFloat(site.DOTLatitude);
-          const lon = parseFloat(site.DOTLongitude);
+          const lat = parseFloat(site.Latitude);
+          const lon = parseFloat(site.Longitude);
           const rank = parseInt(site.Rank);
 
           if (!isNaN(lat) && !isNaN(lon)) {
@@ -257,10 +278,28 @@
 
             sitesLayer.eachLayer((layer) => {
               const layerLatLng = layer.getLatLng();
+              const customData = layer.options?.customData;
+
+              // shift label positions based on matching selected rank value from button click
+              labelsLayer.eachLayer((label) => {
+                labelsLayer.removeLayer(label); // Remove existing label
+
+                const isTarget = label.rank === rank;
+                const newLabel = L.marker(label.getLatLng(), {
+                  icon: label.options.icon,
+                  pane: isTarget ? "labels" : "bottom",
+                  opacity: isTarget ? 1 : 0, // fully transparent if not selected
+                });
+                newLabel.rank = label.rank;
+                labelsLayer.addLayer(newLabel);
+              });
+
               if (
                 layerLatLng &&
+                customData &&
                 layerLatLng.lat === lat &&
-                layerLatLng.lng === lon
+                layerLatLng.lng === lon &&
+                customData.rank === rank // ensures the popup opens that matches rank values and not just lat/lon
               ) {
                 layer.openPopup();
               }
@@ -290,6 +329,18 @@
           setTimeout(() => {
             el.classList.remove("active"); // Actually remove class after fade
           }, 400);
+        });
+
+        // reset map labels
+        labelsLayer.eachLayer((label) => {
+          labelsLayer.removeLayer(label);
+          const resetLabel = L.marker(label.getLatLng(), {
+            icon: label.options.icon,
+            pane: "labels",
+            opacity: 1,
+          });
+          resetLabel.rank = label.rank;
+          labelsLayer.addLayer(resetLabel);
         });
       });
     } catch (error) {
