@@ -199,6 +199,7 @@
           <strong>Rank</strong>: ${rank}<br>
           <strong>County</strong>: ${row.County}<br>
           <strong>Route</strong>: KY-${row["Road #"]}<br>
+          <strong>Project Type</strong>: ${row["Project Type"]}<br>
           <strong>Mile Point</strong>: ${
             URL === "N/A"
               ? "N/A"
@@ -274,7 +275,7 @@
           const rank = parseInt(site.Rank);
 
           if (!isNaN(lat) && !isNaN(lon)) {
-            map.flyTo([lat, lon], 14, { duration: 1.0 });
+            map.flyTo([lat, lon], 14, { duration: 1.5 });
 
             sitesLayer.eachLayer((layer) => {
               const layerLatLng = layer.getLatLng();

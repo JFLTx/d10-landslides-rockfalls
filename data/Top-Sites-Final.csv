@@ -1,4 +1,4 @@
-Road #,County,SCORE TYPE,MP,Tab Code,PDS,DS,Field Score,Detour Length (mi),DL-ES,ADT(max),ADT-ES,Exposure Score (MAX%),Risk Index,Rank,Project Type,Latitude,Longitude,Functional Classification
+Road #,County,Project Type,MP,Tab Code,PDS,DS,Field Score,Detour Length (mi),DL-ES,ADT(max),ADT-ES,Exposure Score (MAX%),Risk Index,Rank,Project Type,Latitude,Longitude,Functional Classification
 9000,POWELL,ROCKFALL,31.84,9000_POW_31.84,16,17,612,19.45,81,8788,81,100,612,1,ROCKFALL,37.80830152,-83.71123226,Principal Arterial - Other Freeways and Expressway
 52,LEE,ROCKFALL,13.1,52_LEE_12.80-13.10,14,13,876,25.53,81,2117,27,66.7,584,2,ROCKFALL & LANDSLIDE,37.57048755,-83.70084289,Major Collector
 541,BREATHITT,LANDSLIDE,5.05,541_BRE_4.88-5.09,13,16,798,19.23,81,628,9,55.6,443,3,ROCKFALL & LANDSLIDE,37.60059033,-83.47921429,Minor Collector
