@@ -160,16 +160,23 @@
       const RI = row["Risk Index"];
       const ADT = row["ADT(max)"];
       const ES = row["Exposure Score (MAX%)"];
-      const project = row["Project Type"];
+      const project = row["Project Type (REAL)"];
 
       if (!isNaN(lat) && !isNaN(lon) && !isNaN(rank)) {
+        const markerClass =
+          project === "ROCKFALL"
+            ? "rockfall-marker"
+            : project === "LANDSLIDE"
+            ? "landslide-marker"
+            : "custom-circle-marker";
+
         const marker = L.marker([lat, lon], {
-          // radius: 10,
-          // weight: 2,
-          // color: color,
-          // fillColor: color,
-          // fillOpacity: 0.6,
-          icon: icon,
+          icon: L.divIcon({
+            className: `leaflet-marker-icon ${markerClass}`,
+            iconSize: [20, 20],
+            iconAnchor: [10, 10],
+            popupAnchor: [0, -10],
+          }),
           pane: "middle",
           customData: { rank: rank },
         }).addTo(layerGroup);
@@ -199,7 +206,7 @@
           <strong>Rank</strong>: ${rank}<br>
           <strong>County</strong>: ${row.County}<br>
           <strong>Route</strong>: KY-${row["Road #"]}<br>
-          <strong>Project Type</strong>: ${row["Project Type"]}<br>
+          <strong>Project Type</strong>: ${project}<br>
           <strong>Mile Point</strong>: ${
             URL === "N/A"
               ? "N/A"
@@ -229,7 +236,8 @@
   function createLegend() {
     const legendDiv = document.getElementById("legend");
     legendDiv.innerHTML = `
-      <div><span class="legend-symbol sites"></span>Top 50 Sites</div>
+      <div><span class="legend-symbol rockfalls"></span>Rockfall Site</div>
+      <div><span class="legend-symbol landslides"></span>Landslide Site</div>
       <div><span class="legend-symbol-square county"></span>District 10 Counties</div>
       <div><span class="legend-symbol-square d10"></span>KYTC District 10</div>
     `;
@@ -266,7 +274,15 @@
       sites.sort((a, b) => parseInt(a.Rank) - parseInt(b.Rank));
       sites.forEach((site) => {
         const siteItem = document.createElement("div");
-        siteItem.className = "legend-text";
+        const type = site["Project Type (REAL)"];
+        const typeClass =
+          type === "ROCKFALL"
+            ? "rockfall-button"
+            : type === "LANDSLIDE"
+            ? "landslide-button"
+            : "";
+
+        siteItem.className = `legend-text ${typeClass}`;
         siteItem.innerHTML = `<span style="font-weight:700;">Rank ${site.Rank}</span>: KY-${site["Road #"]}, ${site.County} COUNTY`;
 
         siteItem.addEventListener("click", () => {
